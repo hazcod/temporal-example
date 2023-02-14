@@ -1,0 +1,8 @@
+kubernetes/helm/
+*.yml
+*.yaml
+*.json
+.gitignore
+.dockerignore
+Makefile
+ReadMe.md

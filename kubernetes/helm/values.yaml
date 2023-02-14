@@ -1,0 +1,43 @@
+# namespace to deploy to
+namespace: "temporal"
+
+# name of the chart
+name: "temporal"
+
+# owner of the chart
+owner: "ironsecurity"
+
+# enable some stuff for local development
+developmentMode: false
+
+# service port
+servicePort: 9300
+
+# default replica count
+replicaCount: 1
+maxReplicaCount: 10
+scalingCPUTarget: 70
+
+# k8s sa
+serviceAccount: "temporal"
+
+# container image specific settings
+image:
+  # repository to pull image from
+  registry: "eu.gcr.io/ironsecurity"
+
+app:
+
+  logLevel: info
+
+  temporal:
+    max_concurrent: 0
+
+  db:
+    meta:
+      instanceUrl: "intigriti-hybrid-308608:europe-west1:hybrid-main-db"
+      host: "127.0.0.1"
+      port: 3127
+      name: "hybrid"
+      user: ""
+      pass: ""

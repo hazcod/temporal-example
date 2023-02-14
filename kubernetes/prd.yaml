@@ -1,0 +1,12 @@
+namespace: prd-temporal
+
+app:
+
+  log:
+    level: info
+
+  temporal:
+    host: temporal
+    port: 3333
+    namespace: temporal
+    queue: ""

@@ -1,0 +1,15 @@
+
+namespace: dev-temporal
+
+developmentMode: true
+devWorkingDirectory: ""
+
+app:
+  log:
+    level: trace
+
+  temporal:
+    host: temporal
+    port: 3333
+    namespace: temporal
+    queue: ""
