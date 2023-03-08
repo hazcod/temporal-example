@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -10,6 +11,7 @@ import (
 	"logur.dev/logur"
 	"net/http"
 	"temporal/cmd/config"
+	"temporal/workflows/test"
 	"time"
 )
 
@@ -90,6 +92,32 @@ func main() {
 	}
 
 	logger.Info("started worker")
+
+	go func() {
+		time.Sleep(time.Second * 5)
+
+		logger.Info("running workflow")
+
+		run, err := tClient.ExecuteWorkflow(context.Background(), temporalClient.StartWorkflowOptions{
+			ID:                                       "",
+			TaskQueue:                                conf.Temporal.Queue,
+			WorkflowExecutionTimeout:                 0,
+			WorkflowRunTimeout:                       0,
+			WorkflowTaskTimeout:                      0,
+			WorkflowIDReusePolicy:                    0,
+			WorkflowExecutionErrorWhenAlreadyStarted: false,
+			RetryPolicy:                              nil,
+			CronSchedule:                             "",
+			Memo:                                     nil,
+			SearchAttributes:                         nil,
+		}, test.Workflow, "myArgument")
+		if err != nil {
+			logger.WithError(err).Fatal("could not run workflow")
+		}
+
+		wfID := run.GetID()
+		logger.WithField("id", wfID).Info("workflow ran")
+	}()
 
 	if err := tWorker.Run(worker.InterruptCh()); err != nil {
 		logger.WithError(err).Fatal("worker returned error")

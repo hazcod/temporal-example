@@ -5,10 +5,10 @@ import (
 	"go.temporal.io/sdk/activity"
 )
 
-func Activity(ctx context.Context) error {
+func Activity(ctx context.Context, arg string) error {
 	logger := activity.GetLogger(ctx)
 
-	logger.Debug("test activity fired")
+	logger.Info("test activity fired", arg)
 
 	return nil
 }
