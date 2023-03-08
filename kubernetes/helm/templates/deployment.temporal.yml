@@ -1,0 +1,88 @@
+{{ if .Values.developmentMode }}
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  namespace: "{{ .Values.namespace }}"
+  name: "temporalserver"
+
+  labels:
+    app: temporalserver
+    owner: "{{ .Values.owner }}"
+
+spec:
+  replicas: {{ .Values.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: temporalserver
+
+  strategy:
+    type: Recreate
+
+  template:
+
+    metadata:
+
+      labels:
+        app: temporalserver
+        owner: "{{ .Values.owner }}"
+
+      annotations:
+        {{ if not .Values.developmentMode }}
+        # do not enable on Docker for Mac, since it doesn't support AppArmor
+        container.apparmor.security.beta.kubernetes.io/{{ .Values.name }}: runtime/default
+        {{ end }}
+
+    spec:
+
+      restartPolicy: Always
+
+      automountServiceAccountToken: false
+
+      containers:
+      -
+        image: temporalio/auto-setup:1.20.0.0
+        name: temporalserver
+        startupProbe:
+          grpc:
+            port: 7233
+          failureThreshold: 10
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        ports:
+          -
+            name: temporalrpc
+            containerPort: 7233
+        env:
+          -
+            name: ENABLE_ES
+            value: "false"
+          -
+            name: LOG_LEVEL
+            value: INFO
+          -
+            name: DB
+            value: postgresql
+          -
+            name: DB_PORT
+            value: '26257'
+          -
+            name: POSTGRES_USER
+            value: root
+          -
+            name: POSTGRES_PWD
+            value: ''
+          -
+            name: POSTGRES_SEEDS
+            value: 127.0.0.1
+      -
+        image: cockroachdb/cockroach:v22.2.6
+        name: postgresql
+        command: ['cockroach', 'start-single-node', '--insecure', '--listen-addr=127.0.0.1:26257']
+        ports:
+          -
+            name: postgresql
+            containerPort: 26257
+
+{{ end }}

@@ -4,6 +4,9 @@ namespace: dev-temporal
 developmentMode: true
 devWorkingDirectory: ""
 
+image:
+  tag: "0.0"
+
 app:
   log:
     level: trace

@@ -21,7 +21,7 @@ build:
 up:
 	# helm dependency build $(CHART_DIR)
 	kubectl --context $(CONTEXT) create namespace $(NAMESPACE) || true
-	helm upgrade --debug --wait --install \
+	helm upgrade -v 3 --debug --wait --install \
 		--kube-context $(CONTEXT) \
  		--namespace $(NAMESPACE) \
 		--values $(K8S_DIR)/$(STAGE).yaml \

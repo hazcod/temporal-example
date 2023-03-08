@@ -24,7 +24,8 @@ serviceAccount: "temporal"
 # container image specific settings
 image:
   # repository to pull image from
-  registry: "eu.gcr.io/ironsecurity"
+  repository: "eu.gcr.io/ironsecurity"
+  tag: "0.0"
 
 app:
 

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: "{{ .Values.name }}-config"
+  namespace: "{{ .Values.namespace }}"
+
+data:
+  config.yaml: |
+    # config file
+    temporal:
+      host: temporalserver
+      port: 7233
+      queue: main
+      namespace: default
+      max_concurrent: 1000
