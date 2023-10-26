@@ -21,24 +21,19 @@ scalingCPUTarget: 70
 # k8s sa
 serviceAccount: "temporal"
 
+
 # container image specific settings
 image:
   # repository to pull image from
-  repository: "eu.gcr.io/ironsecurity"
-  tag: "0.0"
+  repository: "temporaltest"
+  tag: "0.0.0"
 
 app:
 
-  logLevel: info
+  log:
+    level: info
 
   temporal:
     max_concurrent: 0
-
-  db:
-    meta:
-      instanceUrl: "intigriti-hybrid-308608:europe-west1:hybrid-main-db"
-      host: "127.0.0.1"
-      port: 3127
-      name: "hybrid"
-      user: ""
-      pass: ""
+    queue: main
+    namespace: default

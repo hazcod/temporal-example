@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	validator "github.com/asaskevich/govalidator"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 	"os"
 )
@@ -28,6 +29,8 @@ type Config struct {
 func (c *Config) Validate() error {
 	if c.Log.Level == "" {
 		c.Log.Level = defaultLogLevel
+	} else if _, err := logrus.ParseLevel(c.Log.Level); err != nil {
+		return fmt.Errorf("invalid log level: %v", err)
 	}
 
 	if valid, err := validator.ValidateStruct(c); !valid || err != nil {

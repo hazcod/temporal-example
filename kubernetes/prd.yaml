@@ -1,12 +1,15 @@
 namespace: prd-temporal
 
+developmentMode: false
+
 app:
 
   log:
     level: info
 
   temporal:
-    host: temporal
-    port: 3333
-    namespace: temporal
-    queue: ""
+    host: temporalserver
+    port: 7233
+    namespace: default
+    queue: main
+    max_concurrent: 100

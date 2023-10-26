@@ -8,11 +8,13 @@ image:
   tag: "0.0"
 
 app:
+
   log:
     level: trace
 
   temporal:
-    host: temporal
-    port: 3333
-    namespace: temporal
-    queue: ""
+    host: temporalserver
+    port: 7233
+    namespace: default
+    queue: main
+    max_concurrent: 100

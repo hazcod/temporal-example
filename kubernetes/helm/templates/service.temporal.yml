@@ -10,10 +10,19 @@ spec:
   selector:
     app: temporalserver
 
+  type: LoadBalancer
+
   ports:
   -
+    # GRPC
+    name: temporalgrpc
     protocol: TCP
     port: 7233
     targetPort: 7233
-
+  -
+    # HTTP
+    name: temporalweb
+    protocol: TCP
+    port: 8233
+    targetPort: 8233
 {{ end }}

@@ -26,7 +26,7 @@ up:
  		--namespace $(NAMESPACE) \
 		--values $(K8S_DIR)/$(STAGE).yaml \
 		--set devWorkingDirectory=$(shell pwd) \
-		--set image.registry=$(DOCKER_REGISTRY) \
+		--set image.repository=$(DOCKER_REGISTRY) \
 		--set namespace=$(NAMESPACE) \
 		--version $(RELEASE) \
 		$(NAME) $(CHART_DIR)

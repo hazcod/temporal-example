@@ -16,8 +16,12 @@ spec:
     matchLabels:
       app: {{ .Values.name }}
 
+  # update 1 per 1, creating additional Pods to keep the load
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
 
   template:
 
@@ -26,6 +30,7 @@ spec:
       labels:
         app: "{{ .Values.name }}"
         owner: "{{ .Values.owner }}"
+        devmode: "{{ .Values.developmentMode }}"
 
       annotations:
         {{ if not .Values.developmentMode }}
@@ -37,10 +42,35 @@ spec:
 
       restartPolicy: Always
 
+      {{ if not .Values.developmentMode }}
+      serviceAccountName: "{{ .Values.serviceAccount }}"
+      initContainers:
+      - image: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+        name: workload-identity-initcontainer
+        securityContext:
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+          privileged: false
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [all]
+          seccompProfile:
+            type: RuntimeDefault
+        command:
+          - '/bin/bash'
+          - '-c'
+          - |
+            curl -s -H 'Metadata-Flavor: Google' 'http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token' --retry 30 --retry-connrefused --retry-max-time 30 --fail
+      {{ end }}
+
       automountServiceAccountToken: false
 
       containers:
       -
+        {{ if not .Values.developmentMode }}
+        imagePullPolicy: Always
+        {{ end }}
         image: "{{ .Values.image.repository }}/{{ .Values.name }}:{{ .Values.image.tag }}"
         name: "{{ .Values.name }}"
 
@@ -104,16 +134,16 @@ spec:
           seccompProfile:
             type: RuntimeDefault
 
-      {{ if .Values.developmentMode }}
       volumes:
-      -
-        hostPath:
-          path: {{ .Values.devWorkingDirectory }}
-        name: {{ .Values.name }}-localdev
       -
         configMap:
           name: "{{ .Values.name }}-config"
         name: "{{ .Values.name }}-config"
+      {{ if .Values.developmentMode }}
+      -
+        hostPath:
+          path: {{ .Values.devWorkingDirectory }}
+        name: {{ .Values.name }}-localdev
       -
         emptyDir:
           medium: Memory

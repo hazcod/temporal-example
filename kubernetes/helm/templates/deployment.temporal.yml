@@ -42,47 +42,33 @@ spec:
 
       containers:
       -
-        image: temporalio/auto-setup:1.20.0.0
+        image: temporalio/server:1.22.1.0
         name: temporalserver
+
+        {{ if .Values.developmentMode }}
+        command: ["temporal", "server", "start-dev", "--ip=0.0.0.0", "--port=7233"]
+        {{ end }}
+
         startupProbe:
           grpc:
             port: 7233
           failureThreshold: 10
-          initialDelaySeconds: 3
-          periodSeconds: 3
+          periodSeconds: 1
+
         ports:
-          -
-            name: temporalrpc
-            containerPort: 7233
+        -
+          name: temporalrpc
+          containerPort: 7233
+        -
+          name: temporalweb
+          containerPort: 8233
+
         env:
-          -
-            name: ENABLE_ES
-            value: "false"
-          -
-            name: LOG_LEVEL
-            value: INFO
-          -
-            name: DB
-            value: postgresql
-          -
-            name: DB_PORT
-            value: '26257'
-          -
-            name: POSTGRES_USER
-            value: root
-          -
-            name: POSTGRES_PWD
-            value: ''
-          -
-            name: POSTGRES_SEEDS
-            value: 127.0.0.1
-      -
-        image: cockroachdb/cockroach:v22.2.6
-        name: postgresql
-        command: ['cockroach', 'start-single-node', '--insecure', '--listen-addr=127.0.0.1:26257']
-        ports:
-          -
-            name: postgresql
-            containerPort: 26257
+        -
+          name: ENABLE_ES
+          value: "false"
+        -
+          name: LOG_LEVEL
+          value: INFO
 
 {{ end }}

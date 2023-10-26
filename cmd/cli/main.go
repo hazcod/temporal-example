@@ -80,7 +80,7 @@ func main() {
 		LocalActivityWorkerOnly:            false,
 		MaxHeartbeatThrottleInterval:       time.Second * 10,
 		OnFatalError: func(e error) {
-			logger.WithError(err).Error("fatal worker error encountered")
+			logger.WithError(err).Fatal("fatal worker error encountered")
 		},
 		MaxConcurrentEagerActivityExecutionSize: 0,
 	})

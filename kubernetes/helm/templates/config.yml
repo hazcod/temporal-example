@@ -7,10 +7,12 @@ metadata:
 
 data:
   config.yaml: |
-    # config file
+    log:
+      level: "{{ .Values.app.log.level }}"
+
     temporal:
-      host: temporalserver
-      port: 7233
-      queue: main
-      namespace: default
-      max_concurrent: 1000
+      host: "{{ .Values.app.temporal.host }}"
+      port: {{ .Values.app.temporal.port }}
+      queue: "{{ .Values.app.temporal.queue }}"
+      namespace: "{{ .Values.app.temporal.namespace }}"
+      max_concurrent: {{ .Values.app.temporal.max_concurrent }}

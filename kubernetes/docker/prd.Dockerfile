@@ -1,4 +1,4 @@
-FROM golang:1.20-alpine AS builder
+FROM golang:1.21-alpine AS builder
 
 # always statically compile
 ENV CGO_ENABLED=0
@@ -10,7 +10,7 @@ RUN adduser -s /bin/true -u 1000 -D -h /app app \
 
 # add ca certificates and timezone data files
 # hadolint ignore=DL3018
-RUN apk add --upgrade --no-cache --latest ca-certificates tzdata git \
+RUN apk add --upgrade --no-cache ca-certificates tzdata git \
     && go install github.com/cespare/reflex@latest \
     && go install github.com/go-delve/delve/cmd/dlv@latest
 
@@ -41,10 +41,10 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 USER 1000
 
 # copy over the compiled binary
-COPY --from=builder /app /
+COPY --from=builder /app/cli /
 
 # health endpoint listens on 8080
 EXPOSE 8080
 
 # app binary
-ENTRYPOINT ["/app"]
+ENTRYPOINT ["/cli", "--config=/config/config.yaml"]

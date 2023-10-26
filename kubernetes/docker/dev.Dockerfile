@@ -1,8 +1,7 @@
-FROM golang:1.20-alpine
+FROM golang:1.21-alpine
 
 # always statically compile
 ENV CGO_ENABLED=0
-ENV GOCACHE=/go/cache
 
 # add unprivileged user
 RUN adduser -s /bin/true -u 1000 -D -h /app app \
@@ -11,18 +10,24 @@ RUN adduser -s /bin/true -u 1000 -D -h /app app \
 
 # add ca certificates and timezone data files
 # hadolint ignore=DL3018
-RUN apk add --upgrade --no-cache --latest ca-certificates tzdata git \
+RUN apk add --upgrade --no-cache ca-certificates tzdata git \
     && go install github.com/cespare/reflex@latest \
     && go install github.com/go-delve/delve/cmd/dlv@latest
-
-# an internal docker volume that will contain the go building cache to ensure we don't have to build from scratch
-# every time the container starts, which increases the sartup time
-VOLUME /go/cache
-VOLUME /go/pkg
 
 # run as unprivileged user from now on
 RUN chown -R 1000 /go
 USER 1000
+
+ENV CGO_ENABLED=0
+
+# an internal docker volume that will contain the go building cache to ensure we don't have to build from scratch
+# every time the container starts, which increases the startup time
+ENV GOCACHE=/go/
+ENV GOTMPDIR=/go/tmp/
+RUN mkdir -p /go /go/cache /go/pkg /go/tmp
+VOLUME /go/cache
+VOLUME /go/pkg
+VOLUME /go/tmp
 
 # set default working directory
 WORKDIR /go/src/app/
